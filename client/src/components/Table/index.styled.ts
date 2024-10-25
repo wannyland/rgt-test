@@ -27,6 +27,7 @@ export const StyledTd = styled.td<StyledTdProps>`
   text-align: ${(p) => p.$align};
   padding-inline: 1.2rem;
   border-bottom: 1px solid #e6e8ec;
+  cursor: pointer;
 
   .ellipsis {
     overflow: hidden;

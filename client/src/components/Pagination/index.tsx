@@ -83,7 +83,7 @@ const Pagination = ({
           );
         })
       ) : (
-        <P.Number active={false}>1</P.Number>
+        <P.Number active={true}>1</P.Number>
       )}
       <P.Arrow onClick={onClickNextPage} disabled={isLast}>
         &gt;

@@ -2,9 +2,10 @@ import { GlobalNav } from "model/common";
 import styled from "styled-components";
 
 const Container = styled.div<GlobalNav>`
-  width: ${({ navOpen }) => (navOpen ? "250px" : "0")};
+  width: ${(p) => (p.navOpen ? "250px" : "0")};
   transition: width 0.5s;
   overflow: hidden;
+  background-color: #fff;
 `;
 
 const CollapsedButton = styled.button`
@@ -12,16 +13,20 @@ const CollapsedButton = styled.button`
   padding: 10px;
   cursor: pointer;
   position: fixed;
+  border: 1px solid;
+  background-color: #fff;
 `;
 
 const Button = styled.button`
   width: 100%;
+  border: none;
+  background-color: #fff;
   padding: 10px;
   cursor: pointer;
 `;
 
 const Menu = styled.div<GlobalNav>`
-  display: ${({ navOpen }) => (navOpen ? "flex" : "none")};
+  display: ${(p) => (p.navOpen ? "flex" : "none")};
   flex-direction: column;
   padding: 20px;
 `;
@@ -29,7 +34,9 @@ const Menu = styled.div<GlobalNav>`
 const Item = styled.div`
   padding: 10px;
   cursor: pointer;
-  &:hover {
+
+  &:hover,
+  .active {
     background-color: #f0f0f0;
   }
 `;

@@ -16,7 +16,9 @@ html {
 body {
   height: 100%;
   scrollbar-gutter: stable;
+  background-color: #F8F8F9;
 }
+
 
 *:not(html) {
   padding: 0;

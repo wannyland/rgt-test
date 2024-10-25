@@ -1,8 +1,14 @@
+import API from "api";
+import Button from "components/Atoms/Button";
 import Pagination from "components/Pagination";
-import { Table, TBody, Td, Tr } from "components/Table";
+import { Table, TableNoData, TBody, Td, Tr } from "components/Table";
+import { BOOK_LIST_KEY_GET } from "config/queryKey/books";
+import { returnSuccessBookList } from "config/queryOption/books";
+import useGetQuery from "hooks/useGetQuery";
 import { SearchParamModel } from "model/common";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { S } from "./index.styled";
 
 // Types 정의
 interface Item {
@@ -12,50 +18,45 @@ interface Item {
 }
 
 const BookList = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState<SearchParamModel>({
+    word: "",
     per: 10,
     page: 1,
   });
 
-  const [data, setData] = useState<Item[]>([]);
+  const { data: books, refetch: getBooksList } = useGetQuery(
+    [BOOK_LIST_KEY_GET],
+    () => API.books.get(search),
+    returnSuccessBookList
+  );
 
-  // 데이터 로드
-  useEffect(() => {
-    // 예시 데이터 로드 (여기서는 목업 데이터를 사용)
-    const fetchData = async () => {
-      const mockData: Item[] = Array.from({ length: 50 }, (_, i) => ({
-        id: i + 1,
-        name: `Item ${i + 1}`,
-        description: `Description of Item ${i + 1}`,
-      }));
-      setData(mockData);
-    };
-
-    fetchData();
-  }, []);
-
-  const onChangeSearchHandler = (
-    e: string | number,
-    type: "value" | "page"
-  ) => {
+  // 페이지네이션, word 검색 이벤트 핸들러
+  const onChangeSearchHandler = (e: string | number, type: "word" | "page") => {
     setSearch((_) => ({
       ..._,
       [type]: e,
     }));
   };
 
+  useEffect(() => {
+    getBooksList();
+  }, [search]);
+
   return (
-    <MainContent>
-      <SearchBar>
+    <S.MainContent>
+      <S.SearchBar>
         <input
           type="text"
           placeholder="제목 또는 저자를 입력하세요"
-          value={search.value}
-          onChange={(e) => onChangeSearchHandler(e.target.value, "value")}
+          value={search.word}
+          onChange={(e) => onChangeSearchHandler(e.target.value, "word")}
         />
 
-        <button>추가하기</button>
-      </SearchBar>
+        <Button onClick={() => navigate("create")} $style="primary">
+          추가하기
+        </Button>
+      </S.SearchBar>
       <Table>
         <colgroup>
           <col />
@@ -67,46 +68,34 @@ const BookList = () => {
             <th>제목</th>
             <th>저자</th>
             <th>판매 수량</th>
+            <th>등록일</th>
           </Tr>
         </thead>
         <TBody>
-          {data.map((item) => (
-            <Tr key={item.id} onClick={() => {}}>
-              <Td>{item.id}</Td>
-              <Td>{item.name}</Td>
-              <Td>{item.description}</Td>
-              <Td>{item.description}</Td>
-            </Tr>
-          ))}
+          {books && books.list.length > 0 ? (
+            books?.list.map((_, i) => (
+              <Tr key={`book_${_.id}`} onClick={() => navigate(`${_.id}`)}>
+                <Td>{_.id}</Td>
+                <Td>{_.name}</Td>
+                <Td>{_.author}</Td>
+                <Td>{_.count}</Td>
+                <Td>{_.registeredAt}</Td>
+              </Tr>
+            ))
+          ) : (
+            <TableNoData />
+          )}
         </TBody>
       </Table>
       <Pagination
-        totalItem={data.length ?? 0}
-        currentPage={1}
+        totalItem={books?.totalCount ?? 0}
+        currentPage={search.page}
         setCurrentPage={(e) => onChangeSearchHandler(e, "page")}
         limit={search.per}
-        isLast={false}
+        isLast={books?.isLast}
       />
-    </MainContent>
+    </S.MainContent>
   );
 };
 
 export default BookList;
-
-const MainContent = styled.div`
-  flex-grow: 1;
-  padding: 50px;
-  width: 100%;
-`;
-
-const SearchBar = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-
-  input {
-    width: 590px;
-    padding: 10px;
-    font-size: 16px;
-  }
-`;
