@@ -48,6 +48,14 @@ const CreateBook = () => {
       [type]: e.target.value,
     }));
   };
+
+  const createBook = () => {
+    if (!book.name) {
+      alert("책 제목을 입력해 주세요.");
+      return;
+    }
+    tryCreate(book);
+  };
   return (
     <S.MainContent>
       <PageTitle title="책 등록하기" />
@@ -82,11 +90,7 @@ const CreateBook = () => {
       </InputWrapper>
 
       <ButtonBox>
-        <Button
-          $style="primary"
-          onClick={() => tryCreate(book)}
-          $loading={isLoading}
-        >
+        <Button $style="primary" onClick={createBook} $loading={isLoading}>
           등록하기
         </Button>
       </ButtonBox>
