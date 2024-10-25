@@ -64,7 +64,7 @@ const BookList = () => {
           onChange={(e) => onChangeSearchHandler(e.target.value, "word")}
         />
 
-        <Button onClick={() => navigate("create")} $style="primary">
+        <Button onClick={() => navigate("/books/create")} $style="primary">
           추가하기
         </Button>
       </S.SearchBar>
@@ -86,7 +86,10 @@ const BookList = () => {
         <TBody>
           {books && books.list && books.list.length > 0 ? (
             books?.list.map((_, i) => (
-              <Tr key={`book_${i}_${_.id}`} onClick={() => navigate(`${_.id}`)}>
+              <Tr
+                key={`book_${i}_${_.id}`}
+                onClick={() => navigate(`/books/${_.id}`)}
+              >
                 <Td>{_.name}</Td>
                 <Td>{_.author}</Td>
                 <Td>{addNumberComma(_.count)}</Td>
