@@ -145,12 +145,6 @@ export const updBook = async (data: BookModel) => {
 
   try {
     await conn.beginTransaction();
-    const bookNameChk = await checkBook(data.name);
-
-    // 중복 값 있을시 -2 리턴
-    if (bookNameChk > 0) {
-      return -2;
-    }
 
     const updBookQuery = /*SQL*/ `UPDATE
                                         BOOKS
