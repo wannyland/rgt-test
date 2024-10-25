@@ -3,12 +3,13 @@ import { ComponentPropsWithoutRef, PropsWithChildren } from "react";
 // 검색 Param 기본 모델
 export interface SearchParamModel extends PaginationModel {
   word?: string;
+  id?: string;
 }
 
 // 페이지네이션 기본 모델
 export interface PaginationModel {
-  per: number;
-  page: number;
+  per?: number;
+  page?: number;
 }
 
 /**

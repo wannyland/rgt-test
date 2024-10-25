@@ -57,10 +57,10 @@ const Td = ({
   );
 };
 
-const TableNoData = () => {
+const TableNoData = ({ msg = "등록된 데이터가 없습니다." }) => {
   return (
     <Tr className="nodata">
-      <Td color="gray">등록된 데이터가 없습니다.</Td>
+      <Td>{msg}</Td>
     </Tr>
   );
 };

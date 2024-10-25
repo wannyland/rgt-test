@@ -1,5 +1,12 @@
 import { useRef } from "react";
 
+/**
+ *
+ * callback: 디바운스 적용할 함수
+ * timer : 타이머 (ms)
+ * @description timer 지난 후 callback 실행
+ *
+ */
 function useDebounce<T extends any[]>(
   callback: (...params: T) => void,
   time: number

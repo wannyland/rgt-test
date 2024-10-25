@@ -34,7 +34,7 @@ const CreateBook = () => {
     alert(rs.message);
 
     if (rs.code === 200) {
-      navigate("books");
+      navigate("/books");
       return;
     }
   };

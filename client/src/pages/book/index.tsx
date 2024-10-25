@@ -1,9 +1,12 @@
 import API from "api";
 import Button from "components/Atoms/Button";
+import PageTitle from "components/Atoms/PageTitle";
 import Pagination from "components/Pagination";
 import { Table, TableNoData, TBody, Td, Tr } from "components/Table";
 import { BOOK_LIST_KEY_GET } from "config/queryKey/books";
 import { returnSuccessBookList } from "config/queryOption/books";
+import { addNumberComma } from "function";
+import useDebounce from "hooks/useDebounce";
 import useGetQuery from "hooks/useGetQuery";
 import { SearchParamModel } from "model/common";
 import { useEffect, useState } from "react";
@@ -25,7 +28,11 @@ const BookList = () => {
     page: 1,
   });
 
-  const { data: books, refetch: getBooksList } = useGetQuery(
+  const {
+    data: books,
+    refetch: getBooksList,
+    isLoading,
+  } = useGetQuery(
     [BOOK_LIST_KEY_GET],
     () => API.books.get(search),
     returnSuccessBookList
@@ -39,12 +46,16 @@ const BookList = () => {
     }));
   };
 
+  // debounce 적용
+  const debounceSearch = useDebounce(getBooksList, 300);
+
   useEffect(() => {
-    getBooksList();
+    debounceSearch();
   }, [search]);
 
   return (
     <S.MainContent>
+      <PageTitle title="책 관리" />
       <S.SearchBar>
         <input
           type="text"
@@ -60,11 +71,12 @@ const BookList = () => {
       <Table>
         <colgroup>
           <col />
-          <col />
+          <col width={"280px"} />
+          <col width={"80px"} />
+          <col width={"150px"} />
         </colgroup>
         <thead>
           <Tr>
-            <th>No</th>
             <th>제목</th>
             <th>저자</th>
             <th>판매 수량</th>
@@ -72,13 +84,12 @@ const BookList = () => {
           </Tr>
         </thead>
         <TBody>
-          {books && books.list.length > 0 ? (
+          {books && books.list && books.list.length > 0 ? (
             books?.list.map((_, i) => (
-              <Tr key={`book_${_.id}`} onClick={() => navigate(`${_.id}`)}>
-                <Td>{_.id}</Td>
+              <Tr key={`book_${i}_${_.id}`} onClick={() => navigate(`${_.id}`)}>
                 <Td>{_.name}</Td>
                 <Td>{_.author}</Td>
-                <Td>{_.count}</Td>
+                <Td>{addNumberComma(_.count)}</Td>
                 <Td>{_.registeredAt}</Td>
               </Tr>
             ))
@@ -89,9 +100,9 @@ const BookList = () => {
       </Table>
       <Pagination
         totalItem={books?.totalCount ?? 0}
-        currentPage={search.page}
+        currentPage={search.page ?? 1}
         setCurrentPage={(e) => onChangeSearchHandler(e, "page")}
-        limit={search.per}
+        limit={search.per ?? 10}
         isLast={books?.isLast}
       />
     </S.MainContent>

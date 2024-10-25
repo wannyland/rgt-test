@@ -44,11 +44,6 @@ export const StyledTd = styled.td<StyledTdProps>`
 
 export const StyledTr = styled.tr`
   position: relative;
-  -webkit-transform: translateZ(0);
-
-  .cursor_pointer {
-    cursor: pointer;
-  }
 
   &.nodata {
     height: 48.5px;

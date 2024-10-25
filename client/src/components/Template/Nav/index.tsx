@@ -17,7 +17,7 @@ const GlobalNav = () => {
         <>
           <Navbar.Button onClick={() => setNavOpen(false)}>&lt;</Navbar.Button>
           <Navbar.Menu navOpen={navOpen}>
-            <Navbar.Item onClick={() => navigate("book")}>
+            <Navbar.Item onClick={() => navigate("books")}>
               도서 관리
             </Navbar.Item>
           </Navbar.Menu>

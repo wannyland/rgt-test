@@ -1,6 +1,6 @@
 import { api } from "config";
 import { createUrlParam } from "function";
-import { CreateBookModel } from "model/books";
+import { BookModel, CreateBookModel } from "model/books";
 import { SearchParamModel } from "model/common";
 
 const books = {
@@ -13,6 +13,18 @@ const books = {
 
   create: async (data: CreateBookModel) => {
     const response = await api.post(`books`, data);
+
+    return response.data;
+  },
+
+  edit: async (data: BookModel) => {
+    const response = await api.put(`books`, data);
+
+    return response.data;
+  },
+
+  delete: async (id: number) => {
+    const response = await api.delete(`books`, { data: { id: id } });
 
     return response.data;
   },

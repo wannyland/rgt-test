@@ -65,6 +65,19 @@ const ButtonStyle = css<IButtonStyle>`
       }
       ${Disabled}
     `}
+
+  ${(p) =>
+    p.$style === "negative" &&
+    css`
+      background-color: #f4554a;
+      border-color: #f4554a;
+      color: #fff;
+      &:hover {
+        background-color: rgba(229, 79, 70, 1);
+        border-color: rgba(229, 79, 70, 1);
+      }
+      ${Disabled}
+    `}
 `;
 
 export const StyledButton = styled.button<IButtonStyle & IButtonLoading>`
