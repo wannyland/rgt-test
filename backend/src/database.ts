@@ -9,13 +9,14 @@ const pool = mysql.createPool({
   password: process.env.BOOK_DB_PASSWORD,
   database: process.env.BOOK_DB_NAME,
   port: 3306,
-  waitForConnections: true,
+  waitForConnections: true, // connectionLimit 이 차면 대기 여부
   connectionLimit: 10,
   queueLimit: 0,
   dateStrings: true,
 });
 
 class DataBaseManager {
+  // 연결 풀에서 사용 가능한 연결을 획득
   getConnection = async () => {
     let poolConnection: any = null;
 
@@ -37,6 +38,7 @@ class DataBaseManager {
       console.log(err);
     }
 
+    // 풀 연결 실패시 false 반환
     if (poolConnection == null) return false;
 
     try {
@@ -45,6 +47,7 @@ class DataBaseManager {
       });
       poolConnection.release();
 
+      // 쿼리가 성공하면 결과의 첫 번째 배열(r[0]) 반환
       return r ? r[0] : false;
     } catch (err) {
       console.log(err);

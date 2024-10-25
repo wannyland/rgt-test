@@ -1,6 +1,6 @@
 import db from "database";
 import { attachOffsetLimit, getData } from "function";
-import { CreateBookModel } from "router/model/books";
+import { BookModel, CreateBookModel } from "router/model/books";
 import { CommonParamModel } from "router/model/common";
 import { ServerError } from "router/model/error";
 import { checkBook } from "sql/common";
@@ -120,6 +120,101 @@ export const insBook = async (data: CreateBookModel) => {
   } catch (err) {
     await conn.rollback();
     throw new ServerError(`Error[sql/book/insBook] : ${err}`);
+  } finally {
+    if (conn) await conn.release();
+  }
+
+  return result;
+};
+
+/**
+ *
+ * @date 2024.10.25
+ * @author 태완
+ * @description 책 수정 API
+ * result = -1  :  기본 실패시
+ * result = -2  :  책 이름 중복시
+ * result > 0  : 성공 (insertId 는 무조건 0보다 큼)
+ *
+ */
+export const updBook = async (data: BookModel) => {
+  let result = -1;
+  const conn = await db.getConnection();
+
+  if (!conn) throw "db connection error";
+
+  try {
+    await conn.beginTransaction();
+    const bookNameChk = await checkBook(data.name);
+
+    // 중복 값 있을시 -2 리턴
+    if (bookNameChk > 0) {
+      return -2;
+    }
+
+    const updBookQuery = /*SQL*/ `UPDATE
+                                        BOOKS
+                                  SET
+                                        name = '${data.name}',
+                                        author = '${data.author}',
+                                        count = ${data.count},
+                                        updated_at = NOW()
+                                  WHERE
+                                        id = ${data.id}
+                                    `;
+
+    const [updBookRes] = await conn.query(updBookQuery);
+
+    if (!updBookRes) {
+      result = -1;
+      await conn.rollback();
+      await conn.release();
+      return;
+    }
+
+    result = 1;
+
+    if (result) await conn.commit();
+  } catch (err) {
+    await conn.rollback();
+    throw new ServerError(`Error[sql/book/updBook] : ${err}`);
+  } finally {
+    if (conn) await conn.release();
+  }
+
+  return result;
+};
+
+// 책 삭제하기
+export const delBook = async (id: number) => {
+  let result = true;
+  let conn = null;
+
+  try {
+    conn = await db.getConnection();
+
+    if (!conn) throw "db connection error";
+
+    const delBookQuery = /*SQL*/ `UPDATE
+                                     BOOKS
+                                    SET
+                                      is_deleted = 'Y',
+                                      updated_at = NOW()
+                                    WHERE id = ${id}`;
+
+    const delBookRes = await conn.query(delBookQuery);
+
+    if (!delBookRes) {
+      result = false;
+      return;
+    }
+
+    result = delBookRes;
+
+    await conn.commit();
+  } catch (err) {
+    await conn.rollback();
+    throw new ServerError(`Error[sql/book/delBookRes] : ${err}`);
   } finally {
     if (conn) await conn.release();
   }

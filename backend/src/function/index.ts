@@ -31,6 +31,7 @@ export const getData = async (
 
 // 쿼리 파라미터 할당
 export const filledParam = (param: object) => {
+  // type 이 number 인 param
   let tempArr = ["id", "page", "per"];
   let tempObj = {};
 
@@ -54,7 +55,8 @@ export const filledParam = (param: object) => {
 };
 
 // response handler
-export const ResponseHandler = (result: number) => {
+// result 가 number 일 경우
+export const ResponseHandlerByNumber = (result: number) => {
   if (result > 0) {
     return { code: 200, data: null, message: "완료되었습니다." };
   }
@@ -74,4 +76,17 @@ export const ResponseHandler = (result: number) => {
       message: "중복된 값입니다. 다시 확인해 주세요.",
     };
   }
+};
+
+// response handler
+// result 가 boolean 일 경우
+export const ResponseHandlerByBoolean = (result: boolean) => {
+  if (!result) {
+    return {
+      code: 500,
+      data: null,
+      message: "알 수 없는 오류가 발생 했습니다. 잠시 후 다시 시도해 주세요.",
+    };
+  }
+  return { code: 200, data: null, message: "완료되었습니다." };
 };

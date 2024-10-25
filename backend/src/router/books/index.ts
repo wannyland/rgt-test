@@ -1,8 +1,12 @@
 import { Request, Response, Router } from "express";
-import { filledParam, ResponseHandler } from "function";
-import { CreateBookModel } from "router/model/books";
+import {
+  filledParam,
+  ResponseHandlerByBoolean,
+  ResponseHandlerByNumber,
+} from "function";
+import { BookModel, CreateBookModel } from "router/model/books";
 import { CommonParamModel } from "router/model/common";
-import { getBooks, insBook } from "sql/books";
+import { delBook, getBooks, insBook, updBook } from "sql/books";
 
 const booksRouter = Router();
 
@@ -28,10 +32,31 @@ booksRouter.post("/", async (req: Request, res: Response) => {
   try {
     const result = await insBook(param);
 
-    return res.json(ResponseHandler(result));
+    return res.json(ResponseHandlerByNumber(result));
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+//책 수정하기
+booksRouter.put("/", async (req: Request, res: Response) => {
+  const data: BookModel = req.body;
+  try {
+    const result = await updBook(data);
+
+    return res.json(ResponseHandlerByNumber(result));
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//책 삭제하기
+booksRouter.delete("/", async (req: Request, res: Response) => {
+  const id = req.body.id;
+  const result = await delBook(id);
+
+  return res.json(ResponseHandlerByBoolean(result));
 });
 export default booksRouter;
